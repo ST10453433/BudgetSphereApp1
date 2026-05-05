@@ -75,13 +75,7 @@ app/src/main/java/com/example/budgetsphere/
 └── MainActivity.kt
 
 
-**GitHub Actions**
 
-Every push triggers an automated build via .github/workflows/build.yml. This ensures the app compiles on a clean machine - not just on our local computers.
-
-**APK Download**
-
-The debug APK is located at: app/build/outputs/apk/debug/app-debug.apk
 
 
 
