@@ -6,8 +6,8 @@ A personal budget tracking Android app built with Kotlin and RoomDB.
 
 **Team Members**
 
-- Hlulani Hope Mashaba - ST10202512
 - Zwivhuya Prudence Maphalaphatwa - ST10453433
+-Hlulani Hope Mashaba - ST10202512
 - Kitso Zwane - ST10442335
 - Mankane Makinta - ST10435250
 
