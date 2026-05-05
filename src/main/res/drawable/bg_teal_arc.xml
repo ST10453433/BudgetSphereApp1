@@ -1,0 +1,25 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Solid teal gradient background -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#00BFA5"
+                android:endColor="#009688"
+                android:angle="135"
+                android:type="linear" />
+        </shape>
+    </item>
+
+    <!-- White oval at the bottom to create the arc/curve effect -->
+    <item
+        android:top="140dp"
+        android:left="-60dp"
+        android:right="-60dp"
+        android:bottom="-80dp">
+        <shape android:shape="oval">
+            <solid android:color="#F5F5F5" />
+        </shape>
+    </item>
+
+</layer-list>

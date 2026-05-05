@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="teal_primary">#1AAFAA</color>
+    <color name="teal_dark">#009688</color>
+    <color name="teal_light">#E0F4F3</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#616161</color>
+    <color name="text_hint">#9E9E9E</color>
+    <color name="danger_red">#E53935</color>
+    <color name="income_green">#43A047</color>
+    <color name="background_grey">#F5F5F5</color>
+    <color name="teal_700">#00897B</color>
+    <color name="gray">#9E9E9E</color>
+</resources>

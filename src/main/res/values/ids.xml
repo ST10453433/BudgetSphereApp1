@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="nav_dashboard" type="id" />
+    <item name="nav_list" type="id" />
+    <item name="nav_totals" type="id" />
+    <item name="nav_goals" type="id" />
+    <item name="budgetGoalsContainer" type="id" />
+    <item name="tvCategoryTotal" type="id" />
+    <item name="tvPercent" type="id" />
+    <item name="progressBarCategory" type="id" />
+    <item name="tvExpenseDescription" type="id" />
+    <item name="tvExpenseAmount" type="id" />
+    <item name="tvExpenseDate" type="id" />
+    <item name="tvExpenseTime" type="id" />
+    <item name="tvExpenseCategory" type="id" />
+</resources>
