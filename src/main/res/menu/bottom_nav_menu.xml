@@ -1,30 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Save at: app/src/main/res/menu/bottom_nav_menu.xml -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/nav_dashboard"
-        android:icon="@drawable/ic_home"
+        android:icon="@android:drawable/ic_menu_compass"
         android:title="Home" />
 
     <item
         android:id="@+id/nav_add"
-        android:icon="@drawable/ic_add_circle"
+        android:icon="@android:drawable/ic_input_add"
         android:title="Add" />
 
     <item
         android:id="@+id/nav_list"
-        android:icon="@drawable/ic_description"
+        android:icon="@android:drawable/ic_menu_recent_history"
         android:title="History" />
 
     <item
         android:id="@+id/nav_totals"
-        android:icon="@drawable/ic_target"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
         android:title="Totals" />
 
     <item
         android:id="@+id/nav_goals"
-        android:icon="@drawable/ic_lock"
+        android:icon="@android:drawable/ic_menu_agenda"
         android:title="Goals" />
 
 </menu>

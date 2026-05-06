@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.budgetsphere.MainActivity
+import com.example.budgetsphere.R
 import com.example.budgetsphere.adapters.ExpenseAdapter
 import com.example.budgetsphere.data.AppDatabase
 import com.example.budgetsphere.databinding.FragmentExpenseListBinding
@@ -36,12 +38,23 @@ class ExpenseListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set up RecyclerView
-        adapter = ExpenseAdapter(requireContext())
+        // ── Setup RecyclerView ────────────────────────────────
+        adapter = ExpenseAdapter(requireContext()) { expense ->
+            // Delete on long-press — refreshes list after
+            lifecycleScope.launch {
+                try {
+                    val db = AppDatabase.getInstance(requireContext())
+                    db.expenseDao().delete(expense)
+                    reloadList()
+                } catch (e: Exception) {
+                    Log.e(TAG, "Delete error: ${e.message}")
+                }
+            }
+        }
         binding.recyclerExpenses.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerExpenses.adapter = adapter
 
-        // Default: show current month
+        // ── Default date range: current month ─────────────────
         val today = LocalDate.now()
         val start = today.withDayOfMonth(1).toString()
         val end   = today.toString()
@@ -49,7 +62,7 @@ class ExpenseListFragment : Fragment() {
         binding.etEndDate.setText(end)
         loadExpenses(start, end)
 
-        // Date pickers
+        // ── Date pickers ──────────────────────────────────────
         binding.etStartDate.setOnClickListener {
             pickDate { date ->
                 binding.etStartDate.setText(date)
@@ -63,44 +76,60 @@ class ExpenseListFragment : Fragment() {
             }
         }
 
+        // ── Filter button ─────────────────────────────────────
         binding.btnFilter.setOnClickListener { reloadList() }
+
+        // ── "All Time" shortcut button ────────────────────────
+        binding.btnAllTime.setOnClickListener {
+            binding.etStartDate.setText("2000-01-01")
+            binding.etEndDate.setText(LocalDate.now().toString())
+            reloadList()
+        }
+
+        // ── "This Month" shortcut button ──────────────────────
+        binding.btnThisMonth.setOnClickListener {
+            val now = LocalDate.now()
+            binding.etStartDate.setText(now.withDayOfMonth(1).toString())
+            binding.etEndDate.setText(now.toString())
+            reloadList()
+        }
+
+        // ── Back to Dashboard ─────────────────────────────────
+        binding.btnBackDashboard.setOnClickListener {
+            (activity as? MainActivity)?.navigateTo(R.id.nav_dashboard)
+        }
     }
 
     private fun reloadList() {
         val start = binding.etStartDate.text.toString()
         val end   = binding.etEndDate.text.toString()
-        if (start.isNotEmpty() && end.isNotEmpty()) {
-            loadExpenses(start, end)
-        }
+        if (start.isNotEmpty() && end.isNotEmpty()) loadExpenses(start, end)
     }
 
-    // KEY FIX: uses suspend getExpensesBetweenOnce() NOT LiveData
-    // This is why the app was crashing before
     private fun loadExpenses(start: String, end: String) {
-        Log.d(TAG, "Loading expenses: $start to $end")
+        Log.d(TAG, "Loading expenses from $start to $end")
         lifecycleScope.launch {
             try {
                 val db       = AppDatabase.getInstance(requireContext())
-                // This returns List<Expense> directly — safe in coroutine
                 val expenses = db.expenseDao().getExpensesBetweenOnce(start, end)
                 val cats     = db.categoryDao().getAllCategoriesOnce()
                 val catMap   = cats.associateBy { it.id }
+                val total    = expenses.sumOf { it.amount }
 
+                val b = _binding ?: return@launch
                 requireActivity().runOnUiThread {
                     adapter.submitData(expenses, catMap)
-                    if (expenses.isEmpty()) {
-                        binding.tvExpenseCount.text = "No expenses found for this period"
-                    } else {
-                        val total = expenses.sumOf { it.amount }
-                        binding.tvExpenseCount.text =
-                            "${expenses.size} expense(s)  |  Total: R %.2f".format(total)
-                    }
+
+                    // Summary bar
+                    b.tvExpenseCount.text =
+                        "${expenses.size} expense(s)  •  Total: R %.2f".format(total)
+
+                    // Empty state
+                    b.tvEmpty.visibility =
+                        if (expenses.isEmpty()) View.VISIBLE else View.GONE
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading expenses: ${e.message}")
-                requireActivity().runOnUiThread {
-                    binding.tvExpenseCount.text = "Error loading expenses. Please try again."
-                }
             }
         }
     }

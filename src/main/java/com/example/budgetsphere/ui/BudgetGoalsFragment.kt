@@ -110,7 +110,9 @@ class BudgetGoalsFragment : Fragment() {
             db.budgetGoalDao().insertOrReplace(
                 BudgetGoal(
                     minGoal = minVal,
-                    maxGoal = maxVal
+                    maxGoal = maxVal,
+                    id = TODO(),
+                    createdAt = TODO()
                 )
             )
             Log.d(TAG, "Goals saved: min=$minVal, max=$maxVal")

@@ -1,3 +1,4 @@
+
 package com.example.budgetsphere.ui
 
 import android.app.DatePickerDialog
@@ -44,40 +45,55 @@ class CategoryTotalsFragment : Fragment() {
         binding.etEndDate.setText(end)
         loadTotals(start, end)
 
-        binding.etStartDate.setOnClickListener { pickDate { binding.etStartDate.setText(it) } }
-        binding.etEndDate.setOnClickListener   { pickDate { binding.etEndDate.setText(it) } }
-        binding.btnFilter.setOnClickListener {
-            loadTotals(binding.etStartDate.text.toString(), binding.etEndDate.text.toString())
+        binding.etStartDate.setOnClickListener {
+            pickDate { binding.etStartDate.setText(it); reloadTotals() }
         }
+        binding.etEndDate.setOnClickListener {
+            pickDate { binding.etEndDate.setText(it); reloadTotals() }
+        }
+        binding.btnFilter.setOnClickListener { reloadTotals() }
+    }
+
+    private fun reloadTotals() {
+        val start = binding.etStartDate.text.toString()
+        val end   = binding.etEndDate.text.toString()
+        if (start.isNotEmpty() && end.isNotEmpty()) loadTotals(start, end)
     }
 
     private fun loadTotals(start: String, end: String) {
-        Log.d(TAG, "Loading totals $start → $end")
+        Log.d(TAG, "Loading category totals $start → $end")
         lifecycleScope.launch {
-            val db      = AppDatabase.getInstance(requireContext())
-            val totals  = db.expenseDao().getCategoryTotals(start, end)
-            val cats    = db.categoryDao().getAllCategoriesOnce()
-            val catMap  = cats.associateBy { it.id }
-            val display = totals.map { t ->
-                Pair(catMap[t.categoryId]?.name ?: "Unknown", t.total)
-            }.sortedByDescending { it.second }
+            try {
+                val db     = AppDatabase.getInstance(requireContext())
+                val totals = db.expenseDao().getCategoryTotals(start, end)
+                val cats   = db.categoryDao().getAllCategoriesOnce()
+                val catMap = cats.associateBy { it.id }
+                val display = totals
+                    .map { t -> Pair(catMap[t.categoryId]?.name ?: "Unknown", t.total) }
+                    .sortedByDescending { it.second }
 
-            requireActivity().runOnUiThread {
-                adapter.submitData(display)
-                binding.emptyState.visibility =
-                    if (display.isEmpty()) View.VISIBLE else View.GONE
-                binding.recyclerTotals.visibility =
-                    if (display.isEmpty()) View.GONE else View.VISIBLE
+                requireActivity().runOnUiThread {
+                    adapter.submitData(display)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error: ${e.message}")
             }
         }
     }
 
     private fun pickDate(onPicked: (String) -> Unit) {
         val cal = Calendar.getInstance()
-        DatePickerDialog(requireContext(), { _, y, m, d ->
-            onPicked("%04d-%02d-%02d".format(y, m + 1, d))
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
+        DatePickerDialog(
+            requireContext(),
+            { _, y, m, d -> onPicked("%04d-%02d-%02d".format(y, m + 1, d)) },
+            cal.get(Calendar.YEAR),
+            cal.get(Calendar.MONTH),
+            cal.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 
-    override fun onDestroyView() { super.onDestroyView(); _binding = null }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

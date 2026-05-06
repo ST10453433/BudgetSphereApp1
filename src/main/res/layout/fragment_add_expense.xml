@@ -1,78 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
-    android:fillViewport="true">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    android:background="#FFFFFF">
 
-        <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent" android:layout_height="120dp" android:background="@drawable/bg_teal_arc">
-            <ImageView android:id="@+id/ivBack" android:layout_width="36dp" android:layout_height="36dp" android:src="@drawable/ic_arrow_back" android:padding="6dp" android:clickable="true" android:focusable="true" android:contentDescription="Back" app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent" android:layout_marginTop="44dp" android:layout_marginStart="16dp" app:tint="#FFFFFF"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Add Expense" android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold" app:layout_constraintTop_toTopOf="@id/ivBack" app:layout_constraintBottom_toBottomOf="@id/ivBack" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingStart="16dp" android:paddingEnd="16dp" android:paddingTop="20dp" android:paddingBottom="32dp">
+        <!-- Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add Expense"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#6200EE"
+            android:layout_marginBottom="20dp" />
 
-            <!-- Amount -->
-            <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="16dp" app:cardElevation="2dp" app:cardBackgroundColor="#FFFFFF">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="AMOUNT (R)" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.12"/>
-                    <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxStrokeColor="#1AAFAA" app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp" app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
-                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etAmount" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="0.00" android:inputType="numberDecimal" android:textSize="16sp" android:textColor="#212121" android:textStyle="bold"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+        <!-- Title -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title"
+            android:layout_marginBottom="12dp">
 
-            <!-- Category -->
-            <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" app:cardCornerRadius="16dp" app:cardElevation="2dp" app:cardBackgroundColor="#FFFFFF">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="CATEGORY" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.12"/>
-                    <Spinner android:id="@+id/spinnerCategory" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="10dp"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text" />
 
-            <!-- Description, Date, Times -->
-            <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" app:cardCornerRadius="16dp" app:cardElevation="2dp" app:cardBackgroundColor="#FFFFFF">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+        </com.google.android.material.textfield.TextInputLayout>
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DESCRIPTION" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.12"/>
-                    <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilDescription" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxStrokeColor="#E0E0E0" app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp" app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
-                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etDescription" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="e.g. Checkers weekly shop" android:inputType="text" android:textSize="14sp" android:textColor="#212121"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+        <!-- Amount -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Amount (R)"
+            android:layout_marginBottom="12dp">
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="DATE" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.12" android:layout_marginTop="16dp"/>
-                    <com.google.android.material.textfield.TextInputLayout android:id="@+id/tilDate" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxStrokeColor="#E0E0E0" app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp" app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
-                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etDate" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Tap to pick date" android:inputType="none" android:focusable="false" android:clickable="true" android:textSize="14sp" android:textColor="#212121"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal" />
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="START TIME" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.12" android:layout_marginTop="16dp"/>
-                    <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxStrokeColor="#E0E0E0" app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp" app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
-                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etStartTime" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Tap to pick start time" android:inputType="none" android:focusable="false" android:clickable="true" android:textSize="14sp" android:textColor="#212121"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="END TIME" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.12" android:layout_marginTop="16dp"/>
-                    <com.google.android.material.textfield.TextInputLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox" app:boxStrokeColor="#E0E0E0" app:boxCornerRadiusTopStart="10dp" app:boxCornerRadiusTopEnd="10dp" app:boxCornerRadiusBottomStart="10dp" app:boxCornerRadiusBottomEnd="10dp">
-                        <com.google.android.material.textfield.TextInputEditText android:id="@+id/etEndTime" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="Tap to pick end time" android:inputType="none" android:focusable="false" android:clickable="true" android:textSize="14sp" android:textColor="#212121"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+        <!-- Date -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date"
+            android:layout_marginBottom="12dp">
 
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:inputType="none" />
 
-            <!-- Photo / Receipt -->
-            <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" app:cardCornerRadius="16dp" app:cardElevation="2dp" app:cardBackgroundColor="#FFFFFF">
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="RECEIPT / PHOTO (OPTIONAL)" android:textColor="#9E9E9E" android:textSize="11sp" android:textStyle="bold" android:letterSpacing="0.12"/>
-                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="10dp" android:weightSum="2">
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnTakePhoto" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:text="📷 Camera" android:textColor="#1AAFAA" android:textSize="13sp" android:layout_marginEnd="6dp" app:backgroundTint="#E0F7F5" app:cornerRadius="10dp"/>
-                        <com.google.android.material.button.MaterialButton android:id="@+id/btnUploadReceipt" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:text="📁 Upload" android:textColor="#FFFFFF" android:textSize="13sp" android:layout_marginStart="6dp" app:backgroundTint="#1AAFAA" app:cornerRadius="10dp"/>
-                    </LinearLayout>
-                    <ImageView android:id="@+id/ivPhoto" android:layout_width="match_parent" android:layout_height="160dp" android:scaleType="centerCrop" android:layout_marginTop="10dp" android:visibility="gone" android:contentDescription="Receipt photo"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.button.MaterialButton android:id="@+id/btnSaveExpense" android:layout_width="match_parent" android:layout_height="52dp" android:text="Save Expense" android:textColor="#FFFFFF" android:textSize="16sp" android:textStyle="bold" android:layout_marginTop="24dp" app:backgroundTint="#1AAFAA" app:cornerRadius="12dp"/>
+        <!-- Category spinner -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            android:textSize="12sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp" />
+
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Note -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Note (optional)"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:lines="2" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Receipt image section label -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Attach Receipt (optional)"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Camera + Gallery buttons side by side -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <Button
+                android:id="@+id/btnCamera"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Camera"
+                android:drawableStart="@android:drawable/ic_menu_camera"
+                android:drawablePadding="6dp" />
+
+            <Button
+                android:id="@+id/btnGallery"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Gallery"
+                android:drawableStart="@android:drawable/ic_menu_gallery"
+                android:drawablePadding="6dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
         </LinearLayout>
+
+        <!-- Receipt image preview -->
+        <ImageView
+            android:id="@+id/ivReceiptPreview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:background="#F0F0F0"
+            android:contentDescription="Receipt preview"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Remove image button -->
+        <Button
+            android:id="@+id/btnRemoveImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Remove Image"
+            android:textColor="#F44336"
+            android:layout_marginBottom="20dp"
+            android:visibility="gone"
+            style="@style/Widget.MaterialComponents.Button.TextButton" />
+
+        <!-- Save button -->
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="Save Expense"
+            android:textSize="16sp" />
+
     </LinearLayout>
+
 </ScrollView>

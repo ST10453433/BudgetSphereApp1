@@ -1,3 +1,6 @@
+// ============================================================
+// FILE: ui/DashboardFragment.kt
+// ============================================================
 package com.example.budgetsphere.ui
 
 import android.content.Context
@@ -35,35 +38,41 @@ class DashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val prefs = requireContext().getSharedPreferences("prefs", Context.MODE_PRIVATE)
+        val prefs    = requireContext().getSharedPreferences("prefs", Context.MODE_PRIVATE)
         val username = prefs.getString("username", "User") ?: "User"
 
-        // Load full name from DB to show on dashboard
         loadUserFullName(username)
-
-        // Load this month's spending summary
         loadMonthSummary()
 
-        // ── Quick action buttons ──────────────────────────────
-        // Each button switches to the relevant tab in MainActivity
-
-        // Add Expense
+        // ── Quick-action buttons → navigate to correct tab ────
         binding.btnQuickAdd.setOnClickListener {
             (activity as? MainActivity)?.navigateTo(R.id.nav_add)
         }
-
-        // History
         binding.btnQuickHistory.setOnClickListener {
             (activity as? MainActivity)?.navigateTo(R.id.nav_list)
         }
-
-        // Category Totals
         binding.btnQuickTotals.setOnClickListener {
             (activity as? MainActivity)?.navigateTo(R.id.nav_totals)
         }
-
-        // Budget Goals
         binding.btnQuickGoals.setOnClickListener {
+            (activity as? MainActivity)?.navigateTo(R.id.nav_goals)
+        }
+
+        // ── Category summary row clicks → go to totals tab ───
+        binding.tvCategorySummary.setOnClickListener {
+            (activity as? MainActivity)?.navigateTo(R.id.nav_totals)
+        }
+
+        // ── Expense count row click → go to history tab ───────
+        binding.tvExpenseCount.setOnClickListener {
+            (activity as? MainActivity)?.navigateTo(R.id.nav_list)
+        }
+
+        // ── Goal info / progress bar click → go to goals tab ──
+        binding.tvGoalInfo.setOnClickListener {
+            (activity as? MainActivity)?.navigateTo(R.id.nav_goals)
+        }
+        binding.progressGoal.setOnClickListener {
             (activity as? MainActivity)?.navigateTo(R.id.nav_goals)
         }
 
@@ -76,26 +85,20 @@ class DashboardFragment : Fragment() {
         }
     }
 
-    // Load real full name from database
     private fun loadUserFullName(username: String) {
         lifecycleScope.launch {
             try {
                 val db   = AppDatabase.getInstance(requireContext())
                 val user = db.userDao().findByUsername(username)
-                requireActivity().runOnUiThread {
-                    val displayName = user?.fullName ?: username
-                    binding.tvWelcome.text = "Welcome, $displayName 👋"
-                }
+                val displayName = user?.fullName ?: username
+                _binding?.tvWelcome?.text = "Welcome, $displayName 👋"
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading user: ${e.message}")
-                requireActivity().runOnUiThread {
-                    binding.tvWelcome.text = "Welcome, $username 👋"
-                }
+                _binding?.tvWelcome?.text = "Welcome, $username 👋"
             }
         }
     }
 
-    // Load this month's spending vs goal
     private fun loadMonthSummary() {
         lifecycleScope.launch {
             try {
@@ -107,44 +110,38 @@ class DashboardFragment : Fragment() {
                 val expenses = db.expenseDao().getExpensesBetweenOnce(startOfMonth, endOfMonth)
                 val total    = expenses.sumOf { it.amount }
                 val goal     = db.budgetGoalDao().getLatestGoal()
-
-                // Category breakdown for dashboard
                 val cats     = db.categoryDao().getAllCategoriesOnce()
                 val catMap   = cats.associateBy { it.id }
                 val totals   = db.expenseDao().getCategoryTotals(startOfMonth, endOfMonth)
 
+                // Switch to main thread to update UI
+                val b = _binding ?: return@launch   // fragment may have been destroyed
                 requireActivity().runOnUiThread {
-                    // Total spent
-                    binding.tvTotalSpent.text = "R %.2f".format(total)
-                    binding.tvExpenseCount.text = "${expenses.size} expense(s) this month"
+                    b.tvTotalSpent.text    = "R %.2f".format(total)
+                    b.tvExpenseCount.text  = "${expenses.size} expense(s) this month — tap to view"
 
-                    // Goal progress
                     if (goal != null) {
-                        binding.tvGoalInfo.text =
-                            "Budget: R %.0f – R %.0f".format(goal.minGoal, goal.maxGoal)
-                        binding.progressGoal.max      = goal.maxGoal.toInt()
-                        binding.progressGoal.progress = total.toInt().coerceAtMost(goal.maxGoal.toInt())
-
-                        // Turn progress bar red if over max
+                        b.tvGoalInfo.text          = "Budget: R %.0f – R %.0f  (tap for details)".format(goal.minGoal, goal.maxGoal)
+                        b.progressGoal.max         = goal.maxGoal.toInt()
+                        b.progressGoal.progress    = total.toInt().coerceAtMost(goal.maxGoal.toInt())
                         if (total > goal.maxGoal) {
-                            binding.tvGoalInfo.setTextColor(
+                            b.tvGoalInfo.setTextColor(
                                 resources.getColor(android.R.color.holo_red_light, null)
                             )
                         }
                     } else {
-                        binding.tvGoalInfo.text = "No budget goal set — tap Goals to set one"
+                        b.tvGoalInfo.text = "No budget goal set — tap to set one"
                     }
 
-                    // Category summary text
                     if (totals.isNotEmpty()) {
-                        val sb = StringBuilder()
+                        val sb = StringBuilder("Top categories (tap to see all):\n")
                         totals.sortedByDescending { it.total }.take(3).forEach { t ->
                             val catName = catMap[t.categoryId]?.name ?: "Other"
                             sb.append("$catName: R %.2f\n".format(t.total))
                         }
-                        binding.tvCategorySummary.text = sb.toString().trim()
+                        b.tvCategorySummary.text = sb.toString().trim()
                     } else {
-                        binding.tvCategorySummary.text = "No expenses yet this month"
+                        b.tvCategorySummary.text = "No expenses yet this month — tap to add"
                     }
                 }
             } catch (e: Exception) {

@@ -1,66 +1,44 @@
 package com.example.budgetsphere
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import com.example.budgetsphere.databinding.ActivityMainBinding
-import com.example.budgetsphere.ui.AddExpenseFragment
-import com.example.budgetsphere.ui.BudgetGoalsFragment
-import com.example.budgetsphere.ui.CategoryTotalsFragment
-import com.example.budgetsphere.ui.DashboardFragment
-import com.example.budgetsphere.ui.ExpenseListFragment
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
-    private val TAG = "MainActivity"
+    lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Check login
-        val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
-        if (prefs.getString("username", null) == null) {
-            Log.d(TAG, "Not logged in — going to LoginActivity")
-            // FIX: class.java was corrupted by hyperlink
+        // Guard: if not logged in, send to LoginActivity
+        val prefs    = getSharedPreferences("prefs", Context.MODE_PRIVATE)
+        val username = prefs.getString("username", null)
+        if (username.isNullOrBlank()) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        Log.d(TAG, "MainActivity created")
+        // Wire BottomNavigationView to NavController
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController: NavController = navHostFragment.navController
 
-        // Start on Dashboard
-        loadFragment(DashboardFragment())
-
-        // FIX: bottomNav -> bottomNavigationView to match activity_main.xml
-        binding.bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                // FIX: all R.id references were corrupted by hyperlinks
-                R.id.nav_dashboard -> { loadFragment(DashboardFragment());        true }
-                R.id.nav_add       -> { loadFragment(AddExpenseFragment());        true }
-                R.id.nav_list      -> { loadFragment(ExpenseListFragment());       true }
-                R.id.nav_totals    -> { loadFragment(CategoryTotalsFragment());    true }
-                R.id.nav_goals     -> { loadFragment(BudgetGoalsFragment());       true }
-                else -> false
-            }
-        }
+        // Use NavigationUI directly instead of setupWithNavController extension
+        // This avoids the missing extension function error
+        NavigationUI.setupWithNavController(binding.bottomNavView, navController)
     }
 
     // Called by DashboardFragment buttons to switch tabs
-    fun navigateTo(navItemId: Int) {
-        // FIX: bottomNav -> bottomNavigationView to match activity_main.xml
-        binding.bottomNavigationView.selectedItemId = navItemId
-    }
-
-    private fun loadFragment(fragment: Fragment) {
-        supportFragmentManager.beginTransaction()
-            // FIX: R.id was corrupted by hyperlink
-            .replace(R.id.fragmentContainer, fragment)
-            .commit()
+    fun navigateTo(menuItemId: Int) {
+        binding.bottomNavView.selectedItemId = menuItemId
     }
 }
