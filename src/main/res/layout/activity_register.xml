@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!-- FILE: res/layout/activity_register.xml -->
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#F5F5F5"
     android:fillViewport="true">
 
     <LinearLayout
@@ -13,21 +13,35 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- ═══ GREEN ARC HEADER ═══ -->
+        <!-- GREEN ARC HEADER -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="220dp"
             android:orientation="vertical"
             android:gravity="center"
-            android:background="#1D9E75"
-            android:paddingBottom="24dp">
+            android:background="@drawable/header_arc_bg"
+            android:paddingBottom="32dp">
+
+            <LinearLayout
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/bg_circle_white"
+                android:layout_marginBottom="12dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="&#x1F4B0;"
+                    android:textSize="28sp"/>
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Create Account"
                 android:textColor="#FFFFFF"
-                android:textSize="24sp"
+                android:textSize="22sp"
                 android:textStyle="bold"/>
 
             <TextView
@@ -35,19 +49,21 @@
                 android:layout_height="wrap_content"
                 android:text="Join BudgetSphere today"
                 android:textColor="#CCFFFFFF"
-                android:textSize="14sp"
-                android:layout_marginTop="6dp"/>
+                android:textSize="13sp"
+                android:layout_marginTop="4dp"/>
+
         </LinearLayout>
 
-        <!-- ═══ WHITE CARD ═══ -->
+        <!-- WHITE FORM CARD -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="#FFFFFF"
+            android:layout_marginTop="-24dp"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
-            android:paddingTop="24dp"
+            android:paddingTop="32dp"
             android:paddingBottom="32dp">
 
             <!-- FULL NAME -->
@@ -57,6 +73,7 @@
                 android:text="FULL NAME"
                 android:textColor="#888888"
                 android:textSize="11sp"
+                android:letterSpacing="0.08"
                 android:layout_marginBottom="6dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -65,14 +82,16 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:startIconDrawable="@android:drawable/ic_menu_myplaces"
                 app:startIconTint="#378ADD"
-                android:layout_marginBottom="16dp">
+                app:boxStrokeColor="#DDDDDD"
+                android:layout_marginBottom="20dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etFullName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="e.g. John Smith"
                     android:inputType="textPersonName"
-                    android:maxLines="1"/>
+                    android:maxLines="1"
+                    android:textSize="15sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- USERNAME -->
@@ -82,6 +101,7 @@
                 android:text="USERNAME"
                 android:textColor="#888888"
                 android:textSize="11sp"
+                android:letterSpacing="0.08"
                 android:layout_marginBottom="6dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -90,14 +110,16 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:startIconDrawable="@android:drawable/ic_menu_myplaces"
                 app:startIconTint="#378ADD"
-                android:layout_marginBottom="16dp">
+                app:boxStrokeColor="#DDDDDD"
+                android:layout_marginBottom="20dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="e.g. john_smith"
                     android:inputType="text"
-                    android:maxLines="1"/>
+                    android:maxLines="1"
+                    android:textSize="15sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- PASSWORD -->
@@ -107,8 +129,16 @@
                 android:text="PASSWORD"
                 android:textColor="#888888"
                 android:textSize="11sp"
+                android:letterSpacing="0.08"
                 android:layout_marginBottom="6dp"/>
 
+            <!--
+                PASSWORD FIELD:
+                - Grey lock icon left, eye icon right
+                - inputType="textPassword" = shows ●●●●●●●● dots
+                - hint = "e.g. Pass@1234" shows a real example
+                - Eye toggle lets user see what they typed
+            -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -116,14 +146,19 @@
                 app:startIconDrawable="@android:drawable/ic_lock_lock"
                 app:startIconTint="#888888"
                 app:passwordToggleEnabled="true"
-                android:layout_marginBottom="16dp">
+                app:passwordToggleTint="#AAAAAA"
+                app:boxStrokeColor="#DDDDDD"
+                android:layout_marginBottom="20dp">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Min 4 characters"
+                    android:hint="e.g. Pass@1234"
                     android:inputType="textPassword"
-                    android:maxLines="1"/>
+                    android:maxLines="1"
+                    android:textSize="15sp"/>
+
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- CONFIRM PASSWORD -->
@@ -133,6 +168,7 @@
                 android:text="CONFIRM PASSWORD"
                 android:textColor="#888888"
                 android:textSize="11sp"
+                android:letterSpacing="0.08"
                 android:layout_marginBottom="6dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -142,23 +178,28 @@
                 app:startIconDrawable="@android:drawable/ic_lock_lock"
                 app:startIconTint="#888888"
                 app:passwordToggleEnabled="true"
-                android:layout_marginBottom="16dp">
+                app:passwordToggleTint="#AAAAAA"
+                app:boxStrokeColor="#DDDDDD"
+                android:layout_marginBottom="20dp">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etConfirmPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Re-enter password"
+                    android:hint="Re-enter e.g. Pass@1234"
                     android:inputType="textPassword"
-                    android:maxLines="1"/>
+                    android:maxLines="1"
+                    android:textSize="15sp"/>
+
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Terms and Privacy Policy checkbox -->
+            <!-- TERMS checkbox -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="20dp">
+                android:layout_marginBottom="24dp">
 
                 <CheckBox
                     android:id="@+id/cbTerms"
@@ -175,7 +216,7 @@
                         android:layout_height="wrap_content"
                         android:text="I agree to the "
                         android:textSize="13sp"
-                        android:textColor="#444444"/>
+                        android:textColor="#555555"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -188,7 +229,7 @@
                         android:layout_height="wrap_content"
                         android:text=" and "
                         android:textSize="13sp"
-                        android:textColor="#444444"/>
+                        android:textColor="#555555"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -209,7 +250,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:backgroundTint="#1D9E75"
-                android:layout_marginBottom="20dp"/>
+                android:layout_marginBottom="24dp"/>
 
             <!-- Already a member link -->
             <LinearLayout

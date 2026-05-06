@@ -21,7 +21,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         Log.d(TAG, "LoginActivity started")
 
-        // If already logged in, go straight to main
+        // If user is already logged in, skip login screen
         val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
         if (prefs.getString("username", null) != null) {
             startActivity(Intent(this, MainActivity::class.java))
@@ -29,11 +29,12 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
+        // Sign In button
         binding.btnLogin.setOnClickListener {
             val username = binding.etUsername.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
 
-            // Basic validation
+            // Validate fields
             if (username.isEmpty()) {
                 binding.etUsername.error = "Please enter your username"
                 return@setOnClickListener
@@ -43,6 +44,7 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
+            // Check credentials against database
             lifecycleScope.launch {
                 try {
                     val db   = AppDatabase.getInstance(applicationContext)
@@ -50,13 +52,16 @@ class LoginActivity : AppCompatActivity() {
 
                     runOnUiThread {
                         if (user != null) {
-                            Log.d(TAG, "Login successful: $username")
-                            // Save logged-in username for use across the app
-                            prefs.edit().putString("username", user.username).apply()
+                            Log.d(TAG, "Login success: $username")
+                            // Save logged in user details
+                            prefs.edit()
+                                .putString("username", user.username)
+                                .putString("fullName", user.fullName)
+                                .apply()
                             startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                             finish()
                         } else {
-                            Log.w(TAG, "Login failed for: $username")
+                            Log.w(TAG, "Login failed: $username")
                             Toast.makeText(
                                 this@LoginActivity,
                                 "Incorrect username or password. Please try again.",
@@ -77,8 +82,19 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+        // Go to Register screen
         binding.tvRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
+        }
+
+        // Google button — placeholder
+        binding.btnGoogle.setOnClickListener {
+            Toast.makeText(this, "Google sign-in coming soon", Toast.LENGTH_SHORT).show()
+        }
+
+        // Facebook button — placeholder
+        binding.btnFacebook.setOnClickListener {
+            Toast.makeText(this, "Facebook sign-in coming soon", Toast.LENGTH_SHORT).show()
         }
     }
 }

@@ -21,11 +21,13 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
         Log.d(TAG, "RegisterActivity started")
 
+        // Create Account button
         binding.btnRegister.setOnClickListener {
-            val fullName  = binding.etFullName.text.toString().trim()
-            val username  = binding.etUsername.text.toString().trim()
-            val password  = binding.etPassword.text.toString().trim()
-            val confirm   = binding.etConfirmPassword.text.toString().trim()
+            val fullName = binding.etFullName.text.toString().trim()
+            val username = binding.etUsername.text.toString().trim()
+            val password = binding.etPassword.text.toString().trim()
+            val confirm  = binding.etConfirmPassword.text.toString().trim()
+            val termsChecked = binding.cbTerms.isChecked
 
             // Validate every field
             if (fullName.isEmpty()) {
@@ -52,31 +54,35 @@ class RegisterActivity : AppCompatActivity() {
                 binding.etConfirmPassword.error = "Passwords do not match"
                 return@setOnClickListener
             }
+            if (!termsChecked) {
+                Toast.makeText(
+                    this,
+                    "Please agree to the Terms of Service and Privacy Policy",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
 
+            // Save new user to database
             lifecycleScope.launch {
                 try {
                     val db = AppDatabase.getInstance(applicationContext)
 
-                    // Check if username already exists
+                    // Check if username already taken
                     val existing = db.userDao().findByUsername(username)
                     if (existing != null) {
                         runOnUiThread {
-                            binding.etUsername.error = "Username already taken. Choose another."
-                            Toast.makeText(
-                                this@RegisterActivity,
-                                "That username is already taken.",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            binding.etUsername.error = "Username already taken — choose another"
                         }
                         return@launch
                     }
 
-                    // Save new user — fullName stored as the display name
+                    // Insert the new user
                     db.userDao().insert(
                         User(
+                            fullName = fullName,
                             username = username,
-                            password = password,
-                            fullName = fullName
+                            password = password
                         )
                     )
                     Log.d(TAG, "Registered: $username ($fullName)")
@@ -87,8 +93,9 @@ class RegisterActivity : AppCompatActivity() {
                             "Account created! Please log in.",
                             Toast.LENGTH_LONG
                         ).show()
-                        finish()
+                        finish() // Go back to login
                     }
+
                 } catch (e: Exception) {
                     Log.e(TAG, "Register error: ${e.message}")
                     runOnUiThread {
@@ -102,6 +109,9 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
-        binding.tvLogin.setOnClickListener { finish() }
+        // Back to login
+        binding.tvLogin.setOnClickListener {
+            finish()
+        }
     }
 }

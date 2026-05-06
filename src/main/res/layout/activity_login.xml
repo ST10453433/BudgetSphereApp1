@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!-- FILE: res/layout/activity_login.xml -->
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#F5F5F5"
     android:fillViewport="true">
 
     <LinearLayout
@@ -13,31 +13,29 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- ═══ GREEN ARC HEADER ═══ -->
+        <!-- GREEN ARC HEADER -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="260dp"
+            android:layout_height="280dp"
             android:orientation="vertical"
             android:gravity="center"
-            android:background="#1D9E75"
-            android:paddingBottom="32dp">
+            android:background="@drawable/header_arc_bg"
+            android:paddingBottom="40dp">
 
-            <!-- Logo circle -->
             <LinearLayout
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:background="#FFFFFF"
-                android:layout_marginBottom="10dp">
+                android:background="@drawable/bg_circle_white"
+                android:layout_marginBottom="12dp">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="💰"
+                    android:text="&#x1F4B0;"
                     android:textSize="32sp"/>
             </LinearLayout>
 
-            <!-- App name -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -46,7 +44,6 @@
                 android:textSize="22sp"
                 android:textStyle="bold"/>
 
-            <!-- Tagline -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -56,16 +53,14 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="16dp"/>
 
-            <!-- Welcome back -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Welcome back 👋"
+                android:text="Welcome back &#x1F44B;"
                 android:textColor="#FFFFFF"
                 android:textSize="20sp"
                 android:textStyle="bold"/>
 
-            <!-- Sign in to continue -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -73,55 +68,72 @@
                 android:textColor="#CCFFFFFF"
                 android:textSize="13sp"
                 android:layout_marginTop="4dp"/>
+
         </LinearLayout>
 
-        <!-- ═══ WHITE CARD ═══ -->
+        <!-- WHITE CARD -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="#FFFFFF"
+            android:layout_marginTop="-24dp"
             android:paddingLeft="24dp"
             android:paddingRight="24dp"
-            android:paddingTop="24dp"
+            android:paddingTop="32dp"
             android:paddingBottom="32dp">
 
-            <!-- USERNAME label -->
+            <!-- USERNAME -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="USERNAME"
                 android:textColor="#888888"
                 android:textSize="11sp"
+                android:letterSpacing="0.08"
                 android:layout_marginBottom="6dp"/>
 
-            <!-- Username field with person icon -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:startIconDrawable="@android:drawable/ic_menu_myplaces"
                 app:startIconTint="#378ADD"
-                android:layout_marginBottom="16dp">
+                app:boxStrokeColor="#DDDDDD"
+                android:layout_marginBottom="20dp">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="e.g. john_smith"
                     android:inputType="text"
-                    android:maxLines="1"/>
+                    android:maxLines="1"
+                    android:textSize="15sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- PASSWORD label -->
+            <!-- PASSWORD -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="PASSWORD"
                 android:textColor="#888888"
                 android:textSize="11sp"
+                android:letterSpacing="0.08"
                 android:layout_marginBottom="6dp"/>
 
-            <!-- Password field with lock icon + eye toggle -->
+            <!--
+                PASSWORD FIELD EXPLAINED:
+                - Lock icon (grey) on the left
+                - Eye icon on the right — tap to show/hide password
+                - inputType="textPassword" shows dots: ●●●●●●●●
+                - hint shows a real example password format
+                - e.g. "Pass@1234" means:
+                    Pass  = starts with a word (capital P)
+                    @     = special character
+                    1234  = numbers at the end
+                - When user types, it shows as: ●●●●●●●●●
+                - User taps the eye icon to see what they typed
+            -->
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,17 +141,22 @@
                 app:startIconDrawable="@android:drawable/ic_lock_lock"
                 app:startIconTint="#888888"
                 app:passwordToggleEnabled="true"
+                app:passwordToggleTint="#AAAAAA"
+                app:boxStrokeColor="#DDDDDD"
                 android:layout_marginBottom="8dp">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="••••••••"
+                    android:hint="e.g. Pass@1234"
                     android:inputType="textPassword"
-                    android:maxLines="1"/>
+                    android:maxLines="1"
+                    android:textSize="15sp"/>
+
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Forgot password link -->
+            <!-- Forgot password -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -148,7 +165,7 @@
                 android:textSize="13sp"
                 android:layout_gravity="end"
                 android:padding="4dp"
-                android:layout_marginBottom="20dp"/>
+                android:layout_marginBottom="24dp"/>
 
             <!-- Sign In button -->
             <Button
@@ -192,7 +209,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="28dp">
 
                 <Button
                     android:id="@+id/btnGoogle"
