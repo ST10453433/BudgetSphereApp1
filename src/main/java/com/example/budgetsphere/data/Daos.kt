@@ -45,13 +45,6 @@ interface CategoryDao {
     suspend fun getById(id: Int): Category?
 }
 
-// ============================================================
-// EXPENSE DAO
-// CHANGE: getExpensesBetweenOnce now returns List<Expense>
-// directly (suspend fun) instead of LiveData. This was causing
-// the app to CRASH in ExpenseListFragment because LiveData
-// cannot be collected directly in a coroutine launch block.
-// ============================================================
 @Dao
 interface ExpenseDao {
 
