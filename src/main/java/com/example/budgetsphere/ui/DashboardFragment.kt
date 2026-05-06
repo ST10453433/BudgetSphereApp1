@@ -1,6 +1,4 @@
-// ============================================================
-// FILE: ui/DashboardFragment.kt
-// ============================================================
+
 package com.example.budgetsphere.ui
 
 import android.content.Context
