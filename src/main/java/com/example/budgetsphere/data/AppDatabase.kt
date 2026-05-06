@@ -1,15 +1,14 @@
 package com.example.budgetsphere.data
 
 import android.content.Context
+import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import android.util.Log
 
-// Increment version number any time you change an entity
 @Database(
-    entities = [User::class, Category::class, Expense::class, BudgetGoal::class],
-    version = 1,
+    entities  = [User::class, Category::class, Expense::class, BudgetGoal::class],
+    version   = 2,          // CHANGED from 1 to 2 (fullName added to User)
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -22,22 +21,20 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         private const val TAG = "AppDatabase"
 
-        // Volatile ensures all threads see the same instance
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
         fun getInstance(context: Context): AppDatabase {
-            Log.d(TAG, "Getting database instance")
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "budgetsphere_db"
                 )
-                    .fallbackToDestructiveMigration()  // Drops & recreates on version change
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
-                Log.d(TAG, "Database instance created")
+                Log.d(TAG, "Database instance created (version 2)")
                 instance
             }
         }

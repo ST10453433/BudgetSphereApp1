@@ -1,3 +1,4 @@
+
 package com.example.budgetsphere.ui
 
 import android.app.DatePickerDialog
@@ -24,7 +25,9 @@ class ExpenseListFragment : Fragment() {
     private lateinit var adapter: ExpenseAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = FragmentExpenseListBinding.inflate(inflater, container, false)
         return binding.root
@@ -33,11 +36,12 @@ class ExpenseListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Set up RecyclerView
         adapter = ExpenseAdapter(requireContext())
         binding.recyclerExpenses.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerExpenses.adapter = adapter
 
-        // Default to current month
+        // Default: show current month
         val today = LocalDate.now()
         val start = today.withDayOfMonth(1).toString()
         val end   = today.toString()
@@ -45,49 +49,75 @@ class ExpenseListFragment : Fragment() {
         binding.etEndDate.setText(end)
         loadExpenses(start, end)
 
+        // Date pickers
         binding.etStartDate.setOnClickListener {
-            pickDate { binding.etStartDate.setText(it); reloadList() }
+            pickDate { date ->
+                binding.etStartDate.setText(date)
+                reloadList()
+            }
         }
         binding.etEndDate.setOnClickListener {
-            pickDate { binding.etEndDate.setText(it); reloadList() }
+            pickDate { date ->
+                binding.etEndDate.setText(date)
+                reloadList()
+            }
         }
+
         binding.btnFilter.setOnClickListener { reloadList() }
     }
 
     private fun reloadList() {
         val start = binding.etStartDate.text.toString()
         val end   = binding.etEndDate.text.toString()
-        if (start.isNotEmpty() && end.isNotEmpty()) loadExpenses(start, end)
+        if (start.isNotEmpty() && end.isNotEmpty()) {
+            loadExpenses(start, end)
+        }
     }
 
+    // KEY FIX: uses suspend getExpensesBetweenOnce() NOT LiveData
+    // This is why the app was crashing before
     private fun loadExpenses(start: String, end: String) {
-        Log.d(TAG, "Loading expenses $start → $end")
+        Log.d(TAG, "Loading expenses: $start to $end")
         lifecycleScope.launch {
             try {
                 val db       = AppDatabase.getInstance(requireContext())
+                // This returns List<Expense> directly — safe in coroutine
                 val expenses = db.expenseDao().getExpensesBetweenOnce(start, end)
                 val cats     = db.categoryDao().getAllCategoriesOnce()
                 val catMap   = cats.associateBy { it.id }
+
                 requireActivity().runOnUiThread {
                     adapter.submitData(expenses, catMap)
-                    binding.tvExpenseCount.text = "${expenses.size} expense(s) found"
-                    binding.emptyState.visibility =
-                        if (expenses.isEmpty()) View.VISIBLE else View.GONE
-                    binding.recyclerExpenses.visibility =
-                        if (expenses.isEmpty()) View.GONE else View.VISIBLE
+                    if (expenses.isEmpty()) {
+                        binding.tvExpenseCount.text = "No expenses found for this period"
+                    } else {
+                        val total = expenses.sumOf { it.amount }
+                        binding.tvExpenseCount.text =
+                            "${expenses.size} expense(s)  |  Total: R %.2f".format(total)
+                    }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading expenses: ${e.message}")
+                requireActivity().runOnUiThread {
+                    binding.tvExpenseCount.text = "Error loading expenses. Please try again."
+                }
             }
         }
     }
 
     private fun pickDate(onPicked: (String) -> Unit) {
         val cal = Calendar.getInstance()
-        DatePickerDialog(requireContext(), { _, y, m, d ->
-            onPicked("%04d-%02d-%02d".format(y, m + 1, d))
-        }, cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH)).show()
+        DatePickerDialog(
+            requireContext(),
+            { _, y, m, d -> onPicked("%04d-%02d-%02d".format(y, m + 1, d)) },
+            cal.get(Calendar.YEAR),
+            cal.get(Calendar.MONTH),
+            cal.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 
-    override fun onDestroyView() { super.onDestroyView(); _binding = null }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

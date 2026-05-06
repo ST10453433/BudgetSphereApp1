@@ -20,8 +20,8 @@ class BudgetGoalsFragment : Fragment() {
     private val binding get() = _binding!!
     private val TAG = "BudgetGoalsFragment"
 
-    private val MAX_GOAL = 50000
-    private val STEP     = 100
+    // SeekBar max = 50000 (R 50,000)
+    private val MAX_AMOUNT = 50000
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -33,63 +33,100 @@ class BudgetGoalsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.seekBarMin.max = MAX_GOAL / STEP
-        binding.seekBarMax.max = MAX_GOAL / STEP
+        // Set seekbar max
+        binding.seekBarMin.max = MAX_AMOUNT
+        binding.seekBarMax.max = MAX_AMOUNT
 
-        // Load saved goal from DB
-        lifecycleScope.launch {
-            val goal = AppDatabase.getInstance(requireContext()).budgetGoalDao().getLatestGoal()
-            requireActivity().runOnUiThread {
-                if (goal != null) {
-                    binding.seekBarMin.progress = (goal.minGoal / STEP).toInt()
-                    binding.seekBarMax.progress = (goal.maxGoal / STEP).toInt()
-                    updateLabels(goal.minGoal, goal.maxGoal)
-                } else {
-                    updateLabels(0.0, 0.0)
-                }
-            }
+        // Back button
+        binding.ivBack.setOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
         }
 
+        // Load existing goal from DB
+        loadExistingGoal()
+
+        // Min seekbar listener
         binding.seekBarMin.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(sb: SeekBar, progress: Int, fromUser: Boolean) {
-                updateLabels(progress * STEP.toDouble(), binding.seekBarMax.progress * STEP.toDouble())
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                binding.tvMinGoal.text = "Min: R %,d".format(progress)
+                Log.d(TAG, "Min goal changed: $progress")
             }
-            override fun onStartTrackingTouch(sb: SeekBar) {}
-            override fun onStopTrackingTouch(sb: SeekBar) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
+        // Max seekbar listener
         binding.seekBarMax.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(sb: SeekBar, progress: Int, fromUser: Boolean) {
-                updateLabels(binding.seekBarMin.progress * STEP.toDouble(), progress * STEP.toDouble())
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                binding.tvMaxGoal.text = "Max: R %,d".format(progress)
+                Log.d(TAG, "Max goal changed: $progress")
             }
-            override fun onStartTrackingTouch(sb: SeekBar) {}
-            override fun onStopTrackingTouch(sb: SeekBar) {}
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
 
+        // Save button
         binding.btnSaveGoals.setOnClickListener {
-            val minGoal = binding.seekBarMin.progress * STEP.toDouble()
-            val maxGoal = binding.seekBarMax.progress * STEP.toDouble()
+            saveGoals()
+        }
+    }
 
-            if (minGoal >= maxGoal) {
-                Toast.makeText(requireContext(), "Minimum must be less than maximum", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+    private fun loadExistingGoal() {
+        lifecycleScope.launch {
+            val db   = AppDatabase.getInstance(requireContext())
+            val goal = db.budgetGoalDao().getLatestGoal()
 
-            lifecycleScope.launch {
-                AppDatabase.getInstance(requireContext())
-                    .budgetGoalDao().insertOrReplace(BudgetGoal(minGoal = minGoal, maxGoal = maxGoal))
-                Log.d(TAG, "Goals saved: min=R$minGoal max=R$maxGoal")
+            if (goal != null) {
+                Log.d(TAG, "Loaded existing goal: min=${goal.minGoal}, max=${goal.maxGoal}")
                 requireActivity().runOnUiThread {
-                    Toast.makeText(requireContext(), "Budget goals saved!", Toast.LENGTH_SHORT).show()
+                    val minVal = goal.minGoal.toInt().coerceIn(0, MAX_AMOUNT)
+                    val maxVal = goal.maxGoal.toInt().coerceIn(0, MAX_AMOUNT)
+
+                    binding.seekBarMin.progress = minVal
+                    binding.seekBarMax.progress = maxVal
+                    binding.tvMinGoal.text = "Min: R %,d".format(minVal)
+                    binding.tvMaxGoal.text = "Max: R %,d".format(maxVal)
                 }
             }
         }
     }
 
-    private fun updateLabels(min: Double, max: Double) {
-        binding.tvMinGoal.text = "Min: R %.0f".format(min)
-        binding.tvMaxGoal.text = "Max: R %.0f".format(max)
+    private fun saveGoals() {
+        val minVal = binding.seekBarMin.progress.toDouble()
+        val maxVal = binding.seekBarMax.progress.toDouble()
+
+        // Validation
+        if (minVal <= 0 && maxVal <= 0) {
+            Toast.makeText(requireContext(), "Please set at least one goal", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (maxVal < minVal) {
+            Toast.makeText(requireContext(), "Maximum goal must be greater than minimum", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        lifecycleScope.launch {
+            val db = AppDatabase.getInstance(requireContext())
+            db.budgetGoalDao().insertOrReplace(
+                BudgetGoal(
+                    minGoal = minVal,
+                    maxGoal = maxVal
+                )
+            )
+            Log.d(TAG, "Goals saved: min=$minVal, max=$maxVal")
+
+            requireActivity().runOnUiThread {
+                Toast.makeText(
+                    requireContext(),
+                    "Goals saved! Min: R ${"%.0f".format(minVal)}, Max: R ${"%.0f".format(maxVal)}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
-    override fun onDestroyView() { super.onDestroyView(); _binding = null }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }

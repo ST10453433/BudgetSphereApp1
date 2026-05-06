@@ -132,7 +132,7 @@ class AddExpenseFragment : Fragment() {
                 cats = db.categoryDao().getAllCategoriesOnce()
             }
 
-            categoryIds = cats.map { it.id }
+            categoryIds = cats.map { it.id.toLong() }
             val names = cats.map { it.name }
 
             withContext(Dispatchers.Main) {

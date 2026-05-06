@@ -1,61 +1,74 @@
 package com.example.budgetsphere.adapters
 
 import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.budgetsphere.R
 import com.example.budgetsphere.data.Category
 import com.example.budgetsphere.data.Expense
+import java.io.File
 
-class ExpenseAdapter(requireContext: Context) : RecyclerView.Adapter<ExpenseAdapter.ViewHolder>() {
+class ExpenseAdapter(private val context: Context) :
+    RecyclerView.Adapter<ExpenseAdapter.ExpenseViewHolder>() {
 
     private var expenses: List<Expense> = emptyList()
-    private var categoryMap: Map<Long, Category> = emptyMap()
+    private var categoryMap: Map<Int, Category> = emptyMap()
 
-    fun submitData(expenses: List<Expense>, categoryMap: Map<Long, Category>) {
+    fun submitData(expenses: List<Expense>, categoryMap: Map<Int, Category>) {
         this.expenses = expenses
         this.categoryMap = categoryMap
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_expense, parent, false)
-        return ViewHolder(view)
+        return ExpenseViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
         val expense = expenses[position]
-        val category = categoryMap[expense.categoryId]
+
+        // Fix: Explicitly convert the ID to Int to match the Map key type
+        // This avoids the "Incompatible types" error.
+        val categoryId = expense.categoryId.toInt()
+        val category = categoryMap[categoryId]
 
         holder.tvDescription.text = expense.description
         holder.tvAmount.text = "R %.2f".format(expense.amount)
-        holder.tvDate.text = expense.date
-        holder.tvTime.text = "${expense.startTime} – ${expense.endTime}"
-
-        // Display category name or fallback
+        holder.tvDate.text = "${expense.date}  ${expense.startTime} – ${expense.endTime}"
         holder.tvCategory.text = category?.name ?: "Unknown"
 
-        // Dynamically set color based on category data
-        val colorString = category?.colorHex ?: "#9E9E9E"
-        try {
-            holder.tvCategory.setTextColor(Color.parseColor(colorString))
-        } catch (e: Exception) {
-            holder.tvCategory.setTextColor(Color.GRAY)
+        // Handle Image loading logic
+        if (!expense.photoPath.isNullOrEmpty()) {
+            val file = File(expense.photoPath!!)
+            if (file.exists()) {
+                holder.ivPhoto.visibility = View.VISIBLE
+                Glide.with(context)
+                    .load(file)
+                    .centerCrop()
+                    .into(holder.ivPhoto)
+            } else {
+                holder.ivPhoto.visibility = View.GONE
+            }
+        } else {
+            holder.ivPhoto.visibility = View.GONE
         }
     }
 
-    override fun getItemCount(): Int = expenses.size
+    override fun getItemCount() = expenses.size
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvDescription: TextView = view.findViewById(R.id.tvExpenseDescription)
-        val tvAmount: TextView = view.findViewById(R.id.tvExpenseAmount)
-        val tvDate: TextView = view.findViewById(R.id.tvExpenseDate)
-        val tvTime: TextView = view.findViewById(R.id.tvExpenseTime)
-        val tvCategory: TextView = view.findViewById(R.id.tvExpenseCategory)
+    class ExpenseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val tvDescription: TextView = itemView.findViewById(R.id.tvDescription)
+        val tvAmount: TextView      = itemView.findViewById(R.id.tvAmount)
+        val tvDate: TextView        = itemView.findViewById(R.id.tvDate)
+        val tvCategory: TextView    = itemView.findViewById(R.id.tvCategory)
+        // Fix: Removed the trailing "." that was causing a syntax error
+        val ivPhoto: ImageView      = itemView.findViewById(R.id.ivPhoto)
     }
 }

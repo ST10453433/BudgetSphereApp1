@@ -19,58 +19,89 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        Log.d(TAG, "RegisterActivity started")
 
-        // btnCreateAccount matches ID in activity_register.xml
-        binding.btnCreateAccount.setOnClickListener {
-            val fullName = binding.etFullName.text.toString().trim()
-            val username = binding.etUsername.text.toString().trim()
-            val password = binding.etPassword.text.toString().trim()
-            val confirm  = binding.etConfirmPassword.text.toString().trim()
+        binding.btnRegister.setOnClickListener {
+            val fullName  = binding.etFullName.text.toString().trim()
+            val username  = binding.etUsername.text.toString().trim()
+            val password  = binding.etPassword.text.toString().trim()
+            val confirm   = binding.etConfirmPassword.text.toString().trim()
 
+            // Validate every field
             if (fullName.isEmpty()) {
-                binding.etFullName.error = "Required"
+                binding.etFullName.error = "Please enter your full name"
                 return@setOnClickListener
             }
             if (username.isEmpty()) {
-                binding.etUsername.error = "Required"
+                binding.etUsername.error = "Please enter a username"
+                return@setOnClickListener
+            }
+            if (username.length < 3) {
+                binding.etUsername.error = "Username must be at least 3 characters"
                 return@setOnClickListener
             }
             if (password.isEmpty()) {
-                binding.etPassword.error = "Required"
+                binding.etPassword.error = "Please enter a password"
                 return@setOnClickListener
             }
             if (password.length < 4) {
-                binding.etPassword.error = "Min 4 characters"
+                binding.etPassword.error = "Password must be at least 4 characters"
                 return@setOnClickListener
             }
             if (password != confirm) {
                 binding.etConfirmPassword.error = "Passwords do not match"
                 return@setOnClickListener
             }
-            if (!binding.cbTerms.isChecked) {
-                Toast.makeText(this, "Please accept the Terms of Service", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
 
             lifecycleScope.launch {
-                val db       = AppDatabase.getInstance(applicationContext)
-                val existing = db.userDao().findByUsername(username)
-                if (existing != null) {
-                    runOnUiThread {
-                        Toast.makeText(this@RegisterActivity, "Username already taken", Toast.LENGTH_SHORT).show()
+                try {
+                    val db = AppDatabase.getInstance(applicationContext)
+
+                    // Check if username already exists
+                    val existing = db.userDao().findByUsername(username)
+                    if (existing != null) {
+                        runOnUiThread {
+                            binding.etUsername.error = "Username already taken. Choose another."
+                            Toast.makeText(
+                                this@RegisterActivity,
+                                "That username is already taken.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        return@launch
                     }
-                    return@launch
-                }
-                db.userDao().insert(User(username = username, password = password))
-                Log.d(TAG, "Registered: $username")
-                runOnUiThread {
-                    Toast.makeText(this@RegisterActivity, "Account created! Please log in.", Toast.LENGTH_SHORT).show()
-                    finish()
+
+                    // Save new user — fullName stored as the display name
+                    db.userDao().insert(
+                        User(
+                            username = username,
+                            password = password,
+                            fullName = fullName
+                        )
+                    )
+                    Log.d(TAG, "Registered: $username ($fullName)")
+
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@RegisterActivity,
+                            "Account created! Please log in.",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        finish()
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Register error: ${e.message}")
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@RegisterActivity,
+                            "Registration failed. Please try again.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
         }
 
-        // tvSignIn matches ID in activity_register.xml
-        binding.tvSignIn.setOnClickListener { finish() }
+        binding.tvLogin.setOnClickListener { finish() }
     }
 }
